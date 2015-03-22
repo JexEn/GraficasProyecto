@@ -1,5 +1,5 @@
 /*
-    Daniel Garza
+    Daniel Garza A01190362
     Jaime Neri
     
     Proyecto Final Graficas
