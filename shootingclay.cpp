@@ -4,6 +4,17 @@
     
     Proyecto Final Graficas
 
+
+    Para hacer commits en Github...
+    1) git add -A
+    2) git commit -m "mensaje"
+    3) git push origin master
+
+    si el push no pasa, entonces...
+    1) git stash
+    2) git pull
+    3) git stash pop
+
 */
 
 #include  <windows.h>
