@@ -14,8 +14,6 @@
     2) git pull
     3) git stash pop
 
-    hola
-
 */
 
 #include  <windows.h>
