@@ -4,8 +4,6 @@
     
     Proyecto Final Graficas
 
-
-<<<<<<< HEAD
     Para hacer commits en Github...
     1) git add -A
     2) git commit -m "mensaje"
@@ -16,9 +14,6 @@
     2) git pull
     3) git stash pop
 
-=======
-    blbalbalblalbalbalblalbalbalblablalbalblab
->>>>>>> 6c3e07d0fe1d9ef1e3ea9393f313367e79027266
 */
 
 #include  <windows.h>
