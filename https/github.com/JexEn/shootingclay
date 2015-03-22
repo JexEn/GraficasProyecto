@@ -1,3 +1,11 @@
+/*
+    Daniel Garza
+    Jaime Neri
+    
+    Proyecto Final Graficas
+
+*/
+
 #include  <windows.h>
 #include <iostream>
 #include <GL/glut.h>
