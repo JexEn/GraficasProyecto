@@ -1,0 +1,34 @@
+Clay Shooter Especificaciones
+
+> Metodos
+	
+	- Discos (2 timers)
+	- Disparo (MouseFunc)
+	- Menu
+	- ManipularMenu (KeyboardFunc)
+
+
+> Display = Area de Juego
+	
+	- Background
+	- Menu
+	- Scoreboard / Progreso / UI / Numero de tiros disponibles
+	- Discos
+		+ Trayectoria de xyz; desaparecen con "y=0", o "z>=1000"
+		+ Pensar en colision de mouse / hitbox
+		+ Checar hitbox, scalef si no se hace chico mientras viaja al fondo
+
+
+> Condiciones / Variables Globales
+	
+	- 1 Juego, 5 rondas, 2 discos por ronda
+	- bool rondaStart
+	- bool juegoStart
+	- Creacion de discoUno y dos
+
+> Sobre el lanzamiento...
+
+	- Posicion en x,y,z
+	- Velocidad: x,y,z
+	- Aceleracion: y = gravedad
+	- Angulo: theta
