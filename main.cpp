@@ -27,12 +27,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <utility>
-<<<<<<< HEAD
-#include <math.h>
-#include <mmsystem.h> 
-=======
 #include <mmsystem.h>
->>>>>>> 62733f9f5540ff14731efd487aa7c1b5904fdbff
 
 float x=1.0;
 using namespace std;
@@ -42,19 +37,7 @@ char inicio[8] = { 'I','-','I','N','I','C','I', 'O'};
 char detener[9] = {'D','-','D','E','T','E','N','E','R'};
 char reset[7] = {'R','-','R','E','S','E','T'};
 char eexit[8] = {'E','S','C','-','E','X','I','T'};
-<<<<<<< HEAD
-char miNombre[10] = {'J','a','i','m','e',' ','N','e','r','i'};
-char miMatricula[9] = {'A','0','1','0','3','4','1','1','2'};
-char marcadorIzq[200] = "";
-char marcadorDer[200] = "";
-int velocidadDeDificultad = 40;
-float tiempoTranscurrido = 0;
-float traslacionDiscoUnoZ = 0;
-float traslacionDiscoUnoY = 0;
-bool cronometro = false;
-=======
 bool aparecerNombres = true;
->>>>>>> 62733f9f5540ff14731efd487aa7c1b5904fdbff
 bool* keyStates = new bool[256];
 bool* keySpecialStates = new bool[256];
 char buffer[300] = "";
@@ -62,55 +45,15 @@ bool difficultyText = false;
 
 bool desaparece = false;
 
-<<<<<<< HEAD
-GLUquadricObj *discoUno;
-GLUquadricObj *discoDos;
-
-
-=======
->>>>>>> 62733f9f5540ff14731efd487aa7c1b5904fdbff
 void init(void){
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glShadeModel (GL_SMOOTH );//sombreado plano
-
-    discoUno = gluNewQuadric();
-    gluQuadricNormals(discoUno, GLU_SMOOTH);
-
-<<<<<<< HEAD
-    discoDos = gluNewQuadric();
-    gluQuadricNormals(discoDos, GLU_SMOOTH);
-
-
-    //glShadeModel (GL_FLAT);
+    //glShadeModel (GL_FLAT );
     //PlaySound("C:\\Users\\JNeri\\Documents\\Graficas\\Semana 6\\Tarea_Pong\\trophy_rush.wav", NULL, SND_SYNC|SND_FILENAME|SND_LOOP);
 }
 
+void myTimer(int v){
 
-
-void discos (int v){
-
-    /*
-
-    x = Vo * t * cos(45°)
-    y = Vo * t * sen(45°) - (0.5g*(t^2))
-    t+=0.001
-
-    */
-
-    if (!desaparece){
-        // se trasladan con timers
-        //comprobar si existe un juego activo, para aventarlo; hay que dibujarlos
-        if(v == 1){
-            traslacionDiscoUnoZ = velocidadDeDificultad * tiempoTranscurrido * cos(45);
-            traslacionDiscoUnoY = (velocidadDeDificultad * tiempoTranscurrido * sen(45)) - (4.9 * pow(tiempoTranscurrido, 2));
-            tiempoTranscurrido+=0.002;
-            glutPostRedisplay();
-            glutTimerFunc(1, myTimer, 1);
-
-        // else if (v == 2)
-        }
-    } 
-=======
 }
 
 void discoUno (int v){
@@ -120,15 +63,16 @@ void discoUno (int v){
     //comprobar si existe un juego activo, para aventarlo
 
     // hay que dibujarlos
->>>>>>> 62733f9f5540ff14731efd487aa7c1b5904fdbff
+
+
+    //glutPostRedisplay();
+    //glutTimerFunc(5,discoUno,1);
+}
+
+void discoDos (int v){
 
 
 }
-
-/*void discoDos (int v){
-
-
-}*/
 
 void draw3dString (void *font, char *s, float x, float y, float z){
     unsigned int i;
@@ -151,22 +95,6 @@ void draw3dStringScale (void *font, float scale, char *s, float x, float y, floa
     unsigned int i;
     glMatrixMode(GL_MODELVIEW);
 
-<<<<<<< HEAD
-void gameArea() {
-    //Recordatorio de tamaño de Ortho...
-
-    //         -x      x     -y     y     -z    z
-    //glOrtho(-400.0, 400, -200.0, 200.0, 100, 300 )
-
-    GLint k;
-    //LIMPIA EL BUFFER DE PROFUNDIDAD
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    GLint xRaster = -300, yRaster = 150;
-    glColor3f(1.0, 1.0, 1.0);
-
-    //Texto en la parte inferior / opciones
-=======
     glPushMatrix();
     glTranslatef(x, y, z);
 
@@ -181,7 +109,6 @@ void gameArea() {
     glPopMatrix();
 }
 void intro(){
->>>>>>> 62733f9f5540ff14731efd487aa7c1b5904fdbff
 
     int xRaster = -370;
     int yRaster = -160;
@@ -251,21 +178,6 @@ void newgame(){
     }
 }
 
-<<<<<<< HEAD
-    // Dibujar discos
-
-    glPushMatrix();
-    glColor3f(1.0, 1.0, 1.0);
-    glLineWidth(1);
-    glTranslated(0,traslacionDiscoUnoY,traslacionDiscoUnoZ);
-    glScaled(1.3,0.4,1);
-    glutWireCube(20);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glutSolidSphere(15,500,500);
-    glPopMatrix();
-
-    glPushMatrix();
-=======
 void gameArea() {
 
     //Recordatorio de tamaño de Ortho...
@@ -278,7 +190,6 @@ void gameArea() {
     //Texto en la parte inferior / opciones
     intro();
     newgame();
->>>>>>> 62733f9f5540ff14731efd487aa7c1b5904fdbff
 
     glutSwapBuffers();
 }
@@ -292,11 +203,14 @@ void reshape (int w, int h){
     glViewport (0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
-    
-    glFrustum (-400.0, 400.0, -200.0, 200.0, 100, 1100.0);
-   
+    if (opcion == 1)
+        glOrtho(-400.0, 400, -200, 200, 100, 300 ); //izq, der, abajo, arriba, cerca, lejos
+
+    else
+        glFrustum (-200.0, 200.0, -200.0, 200.0, 100, 300.0);
+
     glMatrixMode (GL_MODELVIEW);
-    glLoadIdentity();
+    glLoadIdentity ();
     gluLookAt(0, 0, 200, 0, 0, 0, 0, 1, 0);
 }
 
@@ -332,17 +246,6 @@ void dispara(int button, int state, int mouseX, int mouseY){
 
     // restar uno del contador de disparos disponibles
     // si el contador es zero, entonces no se puede disparar
-        /* left button increase joint angle, right button decreases it */
-
-    if(button==GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-    {
-        desaparece = false;
-    }
-    if(button==GLUT_LEFT_BUTTON && state == GLUT_UP)
-    {
-        desaprece = true;
-    }
-    glutPostRedisplay();
 
     // validar si es que le atinaste a un disco o no
 
