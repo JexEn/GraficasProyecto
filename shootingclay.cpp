@@ -27,12 +27,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <utility>
-<<<<<<< HEAD
 #include <math.h>
-#include <mmsystem.h> 
-=======
 #include <mmsystem.h>
->>>>>>> 62733f9f5540ff14731efd487aa7c1b5904fdbff
 
 float x=1.0;
 using namespace std;
@@ -42,7 +38,6 @@ char inicio[8] = { 'I','-','I','N','I','C','I', 'O'};
 char detener[9] = {'D','-','D','E','T','E','N','E','R'};
 char reset[7] = {'R','-','R','E','S','E','T'};
 char eexit[8] = {'E','S','C','-','E','X','I','T'};
-<<<<<<< HEAD
 char miNombre[10] = {'J','a','i','m','e',' ','N','e','r','i'};
 char miMatricula[9] = {'A','0','1','0','3','4','1','1','2'};
 char marcadorIzq[200] = "";
@@ -52,9 +47,7 @@ float tiempoTranscurrido = 0;
 float traslacionDiscoUnoZ = 0;
 float traslacionDiscoUnoY = 0;
 bool cronometro = false;
-=======
 bool aparecerNombres = true;
->>>>>>> 62733f9f5540ff14731efd487aa7c1b5904fdbff
 bool* keyStates = new bool[256];
 bool* keySpecialStates = new bool[256];
 char buffer[300] = "";
@@ -62,13 +55,9 @@ bool difficultyText = false;
 
 bool desaparece = false;
 
-<<<<<<< HEAD
 GLUquadricObj *discoUno;
 GLUquadricObj *discoDos;
 
-
-=======
->>>>>>> 62733f9f5540ff14731efd487aa7c1b5904fdbff
 void init(void){
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glShadeModel (GL_SMOOTH );//sombreado plano
@@ -76,7 +65,6 @@ void init(void){
     discoUno = gluNewQuadric();
     gluQuadricNormals(discoUno, GLU_SMOOTH);
 
-<<<<<<< HEAD
     discoDos = gluNewQuadric();
     gluQuadricNormals(discoDos, GLU_SMOOTH);
 
@@ -102,26 +90,14 @@ void discos (int v){
         //comprobar si existe un juego activo, para aventarlo; hay que dibujarlos
         if(v == 1){
             traslacionDiscoUnoZ = velocidadDeDificultad * tiempoTranscurrido * cos(45);
-            traslacionDiscoUnoY = (velocidadDeDificultad * tiempoTranscurrido * sen(45)) - (4.9 * pow(tiempoTranscurrido, 2));
+            traslacionDiscoUnoY = (velocidadDeDificultad * tiempoTranscurrido * sin(45)) - (4.9 * pow(tiempoTranscurrido, 2));
             tiempoTranscurrido+=0.002;
             glutPostRedisplay();
-            glutTimerFunc(1, myTimer, 1);
+            glutTimerFunc(1, discos, 1);
 
         // else if (v == 2)
         }
-    } 
-=======
-}
-
-void discoUno (int v){
-
-    // se trasladan con timers
-
-    //comprobar si existe un juego activo, para aventarlo
-
-    // hay que dibujarlos
->>>>>>> 62733f9f5540ff14731efd487aa7c1b5904fdbff
-
+    }
 
 }
 
@@ -151,22 +127,6 @@ void draw3dStringScale (void *font, float scale, char *s, float x, float y, floa
     unsigned int i;
     glMatrixMode(GL_MODELVIEW);
 
-<<<<<<< HEAD
-void gameArea() {
-    //Recordatorio de tamaño de Ortho...
-
-    //         -x      x     -y     y     -z    z
-    //glOrtho(-400.0, 400, -200.0, 200.0, 100, 300 )
-
-    GLint k;
-    //LIMPIA EL BUFFER DE PROFUNDIDAD
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    GLint xRaster = -300, yRaster = 150;
-    glColor3f(1.0, 1.0, 1.0);
-
-    //Texto en la parte inferior / opciones
-=======
     glPushMatrix();
     glTranslatef(x, y, z);
 
@@ -180,8 +140,8 @@ void gameArea() {
     }
     glPopMatrix();
 }
+
 void intro(){
->>>>>>> 62733f9f5540ff14731efd487aa7c1b5904fdbff
 
     int xRaster = -370;
     int yRaster = -160;
@@ -234,7 +194,7 @@ void newgame(){
         //Medidas de NewGame
         glRectd(-55,30,100,70);
     }
-    if(difficultyText){ 
+    if(difficultyText){
         sprintf(buffer, "Easy");
         draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, 0,  50, 0);
         sprintf(buffer, "Medium");
@@ -251,21 +211,6 @@ void newgame(){
     }
 }
 
-<<<<<<< HEAD
-    // Dibujar discos
-
-    glPushMatrix();
-    glColor3f(1.0, 1.0, 1.0);
-    glLineWidth(1);
-    glTranslated(0,traslacionDiscoUnoY,traslacionDiscoUnoZ);
-    glScaled(1.3,0.4,1);
-    glutWireCube(20);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glutSolidSphere(15,500,500);
-    glPopMatrix();
-
-    glPushMatrix();
-=======
 void gameArea() {
 
     //Recordatorio de tamaño de Ortho...
@@ -278,7 +223,18 @@ void gameArea() {
     //Texto en la parte inferior / opciones
     intro();
     newgame();
->>>>>>> 62733f9f5540ff14731efd487aa7c1b5904fdbff
+
+    // Dibujar discos
+
+    glPushMatrix();
+    glColor3f(1.0, 1.0, 1.0);
+    glLineWidth(1);
+    glTranslated(0,traslacionDiscoUnoY,traslacionDiscoUnoZ);
+    glScaled(1.3,0.4,1);
+    glutWireCube(20);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glutSolidSphere(15,500,500);
+    glPopMatrix();
 
     glutSwapBuffers();
 }
@@ -292,9 +248,9 @@ void reshape (int w, int h){
     glViewport (0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
-    
+
     glFrustum (-400.0, 400.0, -200.0, 200.0, 100, 1100.0);
-   
+
     glMatrixMode (GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0, 0, 200, 0, 0, 0, 0, 1, 0);
@@ -340,7 +296,7 @@ void dispara(int button, int state, int mouseX, int mouseY){
     }
     if(button==GLUT_LEFT_BUTTON && state == GLUT_UP)
     {
-        desaprece = true;
+        desaparece = true;
     }
     glutPostRedisplay();
 
@@ -358,7 +314,7 @@ int main(int argc, char** argv){
     init ();
     glEnable(GL_DEPTH_TEST); //para diferenciar que vertices estan al frente y detras ver ejemplo del documento de word
     glutDisplayFunc(gameArea);
-    glutTimerFunc(25, myTimer, 1);
+//    glutTimerFunc(25, myTimer, 1);
 
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
