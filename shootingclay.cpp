@@ -92,8 +92,8 @@ void discos (int v){
             traslacionDiscoUnoZ = velocidadDeDificultad * tiempoTranscurrido * cos(45);
             traslacionDiscoUnoY = (velocidadDeDificultad * tiempoTranscurrido * sin(45)) - (4.9 * pow(tiempoTranscurrido, 2));
             tiempoTranscurrido+=0.002;
-            glutPostRedisplay();
             glutTimerFunc(1, discos, 1);
+            glutPostRedisplay();
 
         // else if (v == 2)
         }
@@ -273,6 +273,8 @@ void keyboard(unsigned char key, int mouseX, int mouseY){
             break;
         case 'i':
         case 'I':
+            desaparece = false;
+            glutTimerFunc(1, discos, 1);
             glutPostRedisplay();
             break;
         case 27:
