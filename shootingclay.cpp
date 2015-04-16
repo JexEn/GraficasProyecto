@@ -144,7 +144,7 @@ void draw3dStringScale (void *font, float scale, char *s, float x, float y, floa
 void intro(){
 
     int xRaster = -370;
-    int yRaster = -160;
+    int yRaster = 35;
     int k = 0;
     for (k=0; k<8;k++){
         glRasterPos2i(xRaster,yRaster);
@@ -153,7 +153,7 @@ void intro(){
     }
 
     xRaster = -370;
-    yRaster = -180;
+    yRaster = 15;
     for (k=0; k<9;k++){
         glRasterPos2i(xRaster,yRaster);
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, detener[k]);
@@ -161,7 +161,7 @@ void intro(){
     }
 
     xRaster = -200;
-    yRaster = -160;
+    yRaster = 35;
     for (k=0; k<7;k++){
         glRasterPos2i(xRaster,yRaster);
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, reset[k]);
@@ -169,7 +169,7 @@ void intro(){
     }
 
     xRaster = -200;
-    yRaster = -180;
+    yRaster = 15;
     for (k=0; k<8;k++){
         glRasterPos2i(xRaster,yRaster);
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, eexit[k]);
@@ -179,35 +179,35 @@ void intro(){
     if(aparecerNombres){
         glColor3d(1,1,1);
         sprintf(buffer, "Daniel Garza Lee A01190362");
-        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -399, -200, 0);
+        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -400, 1, 0);
         sprintf(buffer, "Jaime Neri A01034112");
-        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -190, -200, 0);
+        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -200, 1, 0);
     }
 }
 
 void newgame(){
     glColor3d(1,1,1);
-    if(!difficultyText){
+    if(difficultyText){
         sprintf(buffer, "New Game");
-        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, -50,50,0);
+        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, -50, 100,0);
         glColor3d(0,0,0);
         //Medidas de NewGame
         glRectd(-55,30,100,70);
     }
-    if(difficultyText){
+    if(!difficultyText){
         sprintf(buffer, "Easy");
-        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, 0,  50, 0);
+        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, 0, 125, 0);
         sprintf(buffer, "Medium");
-        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, 0,   0, 0);
+        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, 0, 100, 0);
         sprintf(buffer, "Hard");
-        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, 0, -50, 0);
+        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, 0, 75, 0);
         glColor3d(0,0,0);
         //Medida Easy
-        glRectd(-5,30,70,70);
+        glRectd(-5,115,70,140);
         //Medida Medium
-        glRectd(-5,-30,100,20);
+        glRectd(-5,85,100,114);
         //Medida Hard
-        glRectd(-5,-70,70,-20);
+        glRectd(-5,60,70,84);
     }
 }
 
@@ -249,11 +249,11 @@ void reshape (int w, int h){
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
 
-    glFrustum (-400.0, 400.0, -200.0, 200.0, 100, 1100.0);
+    glFrustum (-400.0, 400.0, 0.0, 200.0, 99, 1100.0);
 
     glMatrixMode (GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0, 0, 200, 0, 0, 0, 0, 1, 0);
+    gluLookAt(0, 0, 100, 0, 0, 0, 0, 1, 0);
 }
 
 
