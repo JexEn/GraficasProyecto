@@ -1,0 +1,16 @@
+1. Luces; como quitarlas si ya fueron removidas? Estan deshaciendo los colores...
+
+2. Como escalar las medidas para que el mouse sea preciso?
+
+3. Implementar un ready->set->go (entregable)
+
+4. Sonidos de lanzamiento de disco (entregable)
+
+5. Barra de progreso de ronda (cuantos discos faltan por lanzarse en la ronda?)
+
+6. Ventana de fin de juego (una vez que se despliegue, mandara al menu principal)
+
+7. Poner menu de instrucciones...
+
+8. Materiales / Texturas (poner discos de color "barro" o algo asi)
+
