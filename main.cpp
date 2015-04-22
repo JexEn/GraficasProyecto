@@ -42,31 +42,29 @@ char miNombre[10] = {'J','a','i','m','e',' ','N','e','r','i'};
 char miMatricula[9] = {'A','0','1','0','3','4','1','1','2'};
 char marcadorIzq[200] = "";
 char marcadorDer[200] = "";
-int velocidadDeDificultad = 40;
+int velocidadDeDificultad = 80;
 float tiempoTranscurrido = 0;
 float traslacionDiscoUnoZ = 0;
 float traslacionDiscoUnoY = 0;
+
 bool cronometro = false;
 bool aparecerNombres = true;
 bool* keyStates = new bool[256];
 bool* keySpecialStates = new bool[256];
 char buffer[300] = "";
+
+//Control de menu principal
+bool newGame = false;
 bool difficultyText = false;
 
 bool desaparece = false;
 
-GLUquadricObj *discoUno;
-GLUquadricObj *discoDos;
+float triangleRasterY = 100;
+
 
 void init(void){
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glShadeModel (GL_SMOOTH );//sombreado plano
-
-    discoUno = gluNewQuadric();
-    gluQuadricNormals(discoUno, GLU_SMOOTH);
-
-    discoDos = gluNewQuadric();
-    gluQuadricNormals(discoDos, GLU_SMOOTH);
 
 
     //glShadeModel (GL_FLAT);
@@ -91,9 +89,9 @@ void discos (int v){
         if(v == 1){
             traslacionDiscoUnoZ = velocidadDeDificultad * tiempoTranscurrido * cos(45);
             traslacionDiscoUnoY = (velocidadDeDificultad * tiempoTranscurrido * sin(45)) - (4.9 * pow(tiempoTranscurrido, 2));
-            tiempoTranscurrido+=0.002;
-            glutPostRedisplay();
+            tiempoTranscurrido+=0.005;
             glutTimerFunc(1, discos, 1);
+            glutPostRedisplay();
 
         // else if (v == 2)
         }
@@ -123,6 +121,7 @@ void draw3dString (void *font, char *s, float x, float y, float z){
     }
     glPopMatrix();
 }
+
 void draw3dStringScale (void *font, float scale, char *s, float x, float y, float z){
     unsigned int i;
     glMatrixMode(GL_MODELVIEW);
@@ -142,41 +141,42 @@ void draw3dStringScale (void *font, float scale, char *s, float x, float y, floa
 }
 
 void intro(){
-
-    int xRaster = -370;
-    int yRaster = 35;
-    int k = 0;
-    for (k=0; k<8;k++){
-        glRasterPos2i(xRaster,yRaster);
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, inicio[k]);
-        xRaster +=15;
-    }
-
-    xRaster = -370;
-    yRaster = 15;
-    for (k=0; k<9;k++){
-        glRasterPos2i(xRaster,yRaster);
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, detener[k]);
-        xRaster +=15;
-    }
-
-    xRaster = -200;
-    yRaster = 35;
-    for (k=0; k<7;k++){
-        glRasterPos2i(xRaster,yRaster);
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, reset[k]);
-        xRaster +=15;
-    }
-
-    xRaster = -200;
-    yRaster = 15;
-    for (k=0; k<8;k++){
-        glRasterPos2i(xRaster,yRaster);
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, eexit[k]);
-        xRaster +=15;
-    }
-
     if(aparecerNombres){
+        
+        int xRaster = -370;
+        int yRaster = 35;
+        int k = 0;
+        for (k=0; k<8;k++){
+            glRasterPos2i(xRaster,yRaster);
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, inicio[k]);
+            xRaster +=15;
+        }
+
+        xRaster = -370;
+        yRaster = 15;
+        for (k=0; k<9;k++){
+            glRasterPos2i(xRaster,yRaster);
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, detener[k]);
+            xRaster +=15;
+        }
+
+        xRaster = -200;
+        yRaster = 35;
+        for (k=0; k<7;k++){
+            glRasterPos2i(xRaster,yRaster);
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, reset[k]);
+            xRaster +=15;
+        }
+
+        xRaster = -200;
+        yRaster = 15;
+        for (k=0; k<8;k++){
+            glRasterPos2i(xRaster,yRaster);
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, eexit[k]);
+            xRaster +=15;
+        }
+
+
         glColor3d(1,1,1);
         sprintf(buffer, "Daniel Garza Lee A01190362");
         draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -400, 1, 0);
@@ -186,18 +186,34 @@ void intro(){
 }
 
 void newgame(){
-    glColor3d(1,1,1);
-    if(difficultyText){
+    if(!difficultyText){
+        glColor3d(1,0,0);
+        //Medidas de NewGame
+        // glPushMatrix();
+        // glTranslated(0,0,-10);
+        // glRectd(-60,105,100,135);
+        // glPopMatrix();
+        glColor3d(1,1,1);
+        glBegin(GL_TRIANGLES);
+            glVertex2f(-90.0,115.0);
+            glVertex2f(-90.0,105.0);
+            glVertex2f(-70.0,110.0);
+        glEnd();
         sprintf(buffer, "New Game");
         draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, -50, 100,0);
-        glColor3d(0,0,0);
-        //Medidas de NewGame
-        glRectd(-55,30,100,70);
     }
-    if(!difficultyText){
+    if(difficultyText && !newGame){
+        glColor3d(1,1,1);
+
+        glBegin(GL_TRIANGLES);
+            glVertex2f(-40.0,triangleRasterY+15.0);
+            glVertex2f(-40.0,triangleRasterY+5.0);
+            glVertex2f(-20.0,triangleRasterY+10.0);
+        glEnd();
+
         sprintf(buffer, "Easy");
         draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, 0, 125, 0);
-        sprintf(buffer, "Medium");
+        sprintf(buffer, "Normal");
         draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, 0, 100, 0);
         sprintf(buffer, "Hard");
         draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, 0, 75, 0);
@@ -221,16 +237,17 @@ void gameArea() {
     //LIMPIA EL BUFFER DE PROFUNDIDAD
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     //Texto en la parte inferior / opciones
-    intro();
-    newgame();
+        intro();
+    if(!newGame)
+        newgame();
 
     // Dibujar discos
 
     glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
     glLineWidth(1);
-    glTranslated(0,traslacionDiscoUnoY,traslacionDiscoUnoZ);
-    glScaled(1.3,0.4,1);
+    glTranslated(0,traslacionDiscoUnoY,-traslacionDiscoUnoZ);
+    glScaled(1.3,0.2,0.5);
     glutWireCube(20);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glutSolidSphere(15,500,500);
@@ -239,17 +256,13 @@ void gameArea() {
     glutSwapBuffers();
 }
 
-typedef enum{menuInicial, menuPausa, menuReset, menuAyuda, menuExit, menuBasura}
-opcionesMenu;
-
-
 
 void reshape (int w, int h){
     glViewport (0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
 
-    glFrustum (-400.0, 400.0, 0.0, 200.0, 99, 1100.0);
+    glFrustum (-400.0, 400.0, 0.0, 200.0, 99, 2000.0);
 
     glMatrixMode (GL_MODELVIEW);
     glLoadIdentity();
@@ -268,11 +281,30 @@ void keyboard(unsigned char key, int mouseX, int mouseY){
             break;
         case 'r':
         case 'R':
+            tiempoTranscurrido = 0;
+            aparecerNombres = true;
             // cronometro = false;
             glutPostRedisplay();
             break;
         case 'i':
         case 'I':
+            desaparece = false;
+            glutTimerFunc(1, discos, 1);
+            glutPostRedisplay();
+            break;
+        case 13:
+        if(difficultyText){
+            if(triangleRasterY == 100.0){ //La dificultad seleccionada es Normal
+                newGame = true;
+            }else if(triangleRasterY == 125.0){ //La dificultad seleccionada es Easy
+                newGame = true;
+            } else if(triangleRasterY == 75.0){ //La dificultad seleccionada es Hard
+                newGame = true;
+            }
+        }else{
+            aparecerNombres = false;
+            difficultyText = true;
+        }
             glutPostRedisplay();
             break;
         case 27:
@@ -284,20 +316,75 @@ void keyboard(unsigned char key, int mouseX, int mouseY){
 
 }
 
+void specialKeys(int key, int x, int y) {
+
+    switch(key) {
+        case GLUT_KEY_UP:
+            if(difficultyText){
+                triangleRasterY+=25.0;
+                if(triangleRasterY>125.0)
+                    triangleRasterY=125.0;
+            }
+            glutPostRedisplay(); break;
+        case GLUT_KEY_DOWN:
+            if(difficultyText){
+                triangleRasterY-=25.0;
+                if(triangleRasterY<75.0)
+                    triangleRasterY=75.0;
+            }
+            glutPostRedisplay(); break;
+    }
+}
+
 void dispara(int button, int state, int mouseX, int mouseY){
 
     // restar uno del contador de disparos disponibles
     // si el contador es zero, entonces no se puede disparar
         /* left button increase joint angle, right button decreases it */
 
-    if(button==GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-    {
-        desaparece = false;
-    }
-    if(button==GLUT_LEFT_BUTTON && state == GLUT_UP)
-    {
-        desaparece = true;
-    }
+        //Si el usuario oprime el boton izq del mouse
+    //     if (button == GLUT_LEFT_BUTTON){
+    //         expuesta[posicionX] = true;
+    //         dibujaBaraja();
+    //         if(contExpuestas==0){
+    //             if(dosCartas){
+    //                 expuesta[posicionPrimeraExpuesta] = false;
+    //                 expuesta[posicionSegundaExpuesta] = false;
+    //                 dosCartas = false;
+    //             }
+    //             contExpuestas++;
+    //             valorPrimeraCarta = baraja[posicionX];
+    //             posicionPrimeraExpuesta = posicionX;
+    //         }else{
+    //             contExpuestas=0;
+    //             contTurnos++;
+    //             valorSegundaCarta = baraja[posicionX];
+    //             posicionSegundaExpuesta = posicionX;
+    //             if(valorPrimeraCarta == valorSegundaCarta){
+    //                 //MATCH!!
+    //                 //CAMBIAR COLOR, DEJAR NUMERO
+    //                 dosCartas = true;
+    //                 lock[posicionPrimeraExpuesta] = true;
+    //                 lock[posicionSegundaExpuesta] = true;
+    //                 for(int i=0;i<=15;i++){
+    //                     if(!lock[i]){
+    //                         victoria = false;
+    //                         break;
+    //                     }else
+    //                         victoria=true;
+    //                 }
+    //                 if(victoria){
+    //                     chrono=false;
+    //                     ganaste();
+    //                 }
+    //             }else{
+    //                 //NO MATCH!!
+    //                 //OCULTAR COLOR Y NUMEROS
+    //                 dosCartas = true;
+    //             }
+    //         }
+    // }
+
     glutPostRedisplay();
 
     // validar si es que le atinaste a un disco o no
@@ -318,6 +405,7 @@ int main(int argc, char** argv){
 
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
+    glutSpecialFunc(specialKeys);
     glutMouseFunc(dispara);
 
     // creacionMenu();

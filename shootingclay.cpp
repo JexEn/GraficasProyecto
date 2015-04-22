@@ -220,17 +220,21 @@ void gameArea() {
 
     //LIMPIA EL BUFFER DE PROFUNDIDAD
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
     //Texto en la parte inferior / opciones
+    
     intro();
     newgame();
 
-    // Dibujar discos
 
+
+    // Dibujar discos
     glPushMatrix();
     glColor3f(1.0, 1.0, 1.0);
     glLineWidth(1);
-    glTranslated(0,traslacionDiscoUnoY,traslacionDiscoUnoZ);
-    glScaled(1.3,0.4,1);
+    glTranslated(0,traslacionDiscoUnoY,-traslacionDiscoUnoZ);
+    glScaled(1.3,0.2,0.5);
     glutWireCube(20);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glutSolidSphere(15,500,500);
@@ -238,10 +242,6 @@ void gameArea() {
 
     glutSwapBuffers();
 }
-
-typedef enum{menuInicial, menuPausa, menuReset, menuAyuda, menuExit, menuBasura}
-opcionesMenu;
-
 
 
 void reshape (int w, int h){

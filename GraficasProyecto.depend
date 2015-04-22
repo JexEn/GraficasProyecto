@@ -15,3 +15,14 @@
 	<GL/gl.h>
 	<GL/glu.h>
 
+1429146428 source:c:\users\jneri\graficasproyecto\main.cpp
+	<GLUT/glut.h>
+	<windows.h>
+	<GL/glut.h>
+	<iostream>
+	<stdlib.h>
+	<stdio.h>
+	<utility>
+	<math.h>
+	<mmsystem.h>
+
