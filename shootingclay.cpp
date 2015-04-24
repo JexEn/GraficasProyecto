@@ -378,7 +378,26 @@ glEnable(GL_TEXTURE_2D);
         sprintf(buffer, "S H O T S");
         draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -400, 1, 0);
 
+        glColor3d(0,0,0);
+        sprintf(buffer, "X: %.4g", traslacionBalaX);
+        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -300, 1, 0);
 
+        sprintf(buffer, "X: %.4g", traslacionDiscoUnoX);
+        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -300, 20, 0);
+
+        sprintf(buffer, "Y: %.4g", traslacionBalaY);
+        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -200, 1, 0);
+
+        sprintf(buffer, "Y: %.4g", traslacionDiscoUnoY);
+        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -200, 20, 0);
+
+        sprintf(buffer, "Z: %.4g", traslacionBalaZ);
+        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -100, 1, 0);
+
+        sprintf(buffer, "Z: %.4g", traslacionDiscoUnoZ);
+        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -100, 20, 0);
+        glColor3d(1,1,1);
+        
 glDisable(GL_TEXTURE_2D);
         //Discos que faltan por ser aventados en la ronda
         for(int i=0; i<10; i++){
