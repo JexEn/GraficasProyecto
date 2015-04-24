@@ -45,9 +45,9 @@ char miMatricula[9] = {'A','0','1','0','3','4','1','1','2'};
 char marcadorPuntaje[200] = "";
 
 float velocidadDeDificultad = 80;
-bool ammunition = false;
+bool gameStart = false;
 int balasRestantes = 3;
-int rasterBalas = 395;
+int rasterBalas = -399;
 int puntaje = 1000000;
 
 static GLuint texName[36];
@@ -58,7 +58,12 @@ float traslacionDiscoUnoX = 0;
 float traslacionDiscoUnoY = 10;
 float traslacionDiscoUnoZ = -20;
 int anguloDeTiro = 0;
+int rasterBalaDisparadaZ = 0;
+int rasterDiscosDeRonda = -200;
+bool balaDisparada = false;
 bool discoUnoEnPantalla = false;
+bool colorDiscoUno[10] = {true,false,false,false,false,false,false,false,false,false};
+
 
 bool cronometro = false;
 bool aparecerNombres = true;
@@ -124,7 +129,7 @@ void initRendering(){
     glLightfv(GL_LIGHT0, GL_POSITION, directedLightPos);
     //glEnable(GL_DEPTH_TEST);
     //glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
+    //glEnable(GL_LIGHT0);
     //glEnable(GL_NORMALIZE); ///Users/mariaroque/Imagenes
 
     glEnable(GL_TEXTURE_2D);
@@ -152,6 +157,7 @@ void initRendering(){
     loadTexture(image,5);*/
 
     image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\background.bmp");loadTexture(image,i++);
+    image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\sabritas.bmp");loadTexture(image,i++);
 
     // image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\bandera argentina.bmp");loadTexture(image,i++);
     // image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\bandera brasil.bmp");loadTexture(image,i++);
@@ -199,12 +205,20 @@ void discos (int v){
                 anguloDeTiro = rand()%30+20;
 
             }
-
-            glutPostRedisplay();
-            glutTimerFunc(1, discos, 1);
-
         // else if (v == 2)
         }
+
+        if(balaDisparada)
+            rasterBalaDisparadaZ += 3;
+
+        if(v==1){
+            glutPostRedisplay();
+            glutTimerFunc(1, discos, 1);  // <-- Deberia mandar v = 2 cuando ya manejemos dos discos
+        }//else{
+        //     glutPostRedisplay();
+        //     glutTimerFunc(1, discos, 1);
+        // }
+
     }
 
 }
@@ -212,6 +226,7 @@ void discos (int v){
 
 void draw3dString (void *font, char *s, float x, float y, float z){
     unsigned int i;
+    glDisable(GL_TEXTURE_2D);
     glMatrixMode(GL_MODELVIEW);
 
     glPushMatrix();
@@ -226,10 +241,12 @@ void draw3dString (void *font, char *s, float x, float y, float z){
 
     }
     glPopMatrix();
+    glEnable(GL_TEXTURE_2D);
 }
 
 void draw3dStringScale (void *font, float scale, char *s, float x, float y, float z){
     unsigned int i;
+    glDisable(GL_TEXTURE_2D);
     glMatrixMode(GL_MODELVIEW);
 
     glPushMatrix();
@@ -244,6 +261,7 @@ void draw3dStringScale (void *font, float scale, char *s, float x, float y, floa
 
     }
     glPopMatrix();
+    glEnable(GL_TEXTURE_2D);
 }
 
 void intro(){
@@ -334,15 +352,17 @@ void gameArea() {
     //glOrtho(-400.0, 400, -200.0, 200.0, 100, 300 )
     //LIMPIA EL BUFFER DE PROFUNDIDAD
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    glColor3d(1,1,1);
     //Texto en la parte inferior / opciones
     intro();
     if(!newGame)
         newgame();
 
-    //dibujar ammo
 
-    if(ammunition){
+    //dibujar ammo
+glDisable(GL_TEXTURE_2D);
+
+    if(gameStart){
         rasterBalas = -399;
         for(int i = 0; i<balasRestantes; i++){
             glColor3d(1,0,0);
@@ -351,12 +371,34 @@ void gameArea() {
             glRectd(rasterBalas,15,rasterBalas+10,30);
             rasterBalas+=35;
         }
+
+glEnable(GL_TEXTURE_2D);
+
         glColor3d(1,1,1);
         sprintf(buffer, "S H O T S");
         draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -400, 1, 0);
 
 
+glDisable(GL_TEXTURE_2D);
+        //Discos que faltan por ser aventados en la ronda
+        for(int i=0; i<10; i++){
+            glPushMatrix();
+            if(colorDiscoUno[i])
+                glColor3f(1.0, 0.0, 0.0);
+            else glColor3f(1.0, 1.0, 1.0);
+            glLineWidth(1);
+            glTranslated(rasterDiscosDeRonda,20,0);
+            glScaled(1,0.4,0.2);
+            glutSolidSphere(15,100,100);
+            rasterDiscosDeRonda+=35;
+            glPopMatrix();
+        }
+        rasterDiscosDeRonda = -200;
+
+glEnable(GL_TEXTURE_2D);
+
         //Textura / Fondo, para que no se vea tan pirata el area de juego...
+        glColor3d(1,1,1);
         glBindTexture(GL_TEXTURE_2D, texName[0]);
         glPushMatrix();
         glScalef(14.5,14,1.0);
@@ -375,6 +417,7 @@ void gameArea() {
             glVertex3f(-420.0f, 220.0f, -1500.0f);
         glEnd();
         glPopMatrix();
+
 
         //Scoreboard
         glColor3d(1,1,1);
@@ -395,16 +438,32 @@ void gameArea() {
     // pero usan el mismo timer.
 
     if(discoUnoEnPantalla){
-    glPushMatrix();
-    glColor3f(1.0, 1.0, 1.0);
-    glLineWidth(1);
-    glTranslated(traslacionDiscoUnoX,traslacionDiscoUnoY,-traslacionDiscoUnoZ);
-    glScaled(1.6,0.3,0.5);
-    //glutWireCube(20);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glutSolidSphere(15,500,500);
-    glPopMatrix();
+        glBindTexture(GL_TEXTURE_2D, texName[1]);
+        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+
+        //Activar la generación de coordenadas
+        glEnable(GL_TEXTURE_GEN_S);
+        glEnable(GL_TEXTURE_GEN_T);
+
+        glPushMatrix();
+        glColor3f(1.0, 1.0, 1.0);
+        glLineWidth(1);
+        glTranslated(traslacionDiscoUnoX,traslacionDiscoUnoY,-traslacionDiscoUnoZ);
+        glScaled(1.6,0.2,0.2);
+        //glutWireCube(20);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glutSolidSphere(15,50,50);
+        glPopMatrix();
+
+        glDisable(GL_TEXTURE_GEN_S);
+        glDisable(GL_TEXTURE_GEN_T);
     }
+
+glEnable(GL_TEXTURE_2D);
 
     glutSwapBuffers();
 }
@@ -439,7 +498,7 @@ void keyboard(unsigned char key, int mouseX, int mouseY){
             balasRestantes = 3;
             aparecerNombres = true;
             newGame = false;
-            ammunition = false;
+            gameStart = false;
             difficultyText = false;
             desaparece = true;
             traslacionDiscoUnoX = 0;
@@ -457,20 +516,20 @@ void keyboard(unsigned char key, int mouseX, int mouseY){
         if(difficultyText && !newGame){
             if(triangleRasterY == 100.0){ //La dificultad seleccionada es Normal
                 newGame = true;
-                ammunition = true;
+                gameStart = true;
                 discoUnoEnPantalla = true;
                 desaparece = false;
                 glutTimerFunc(1000, discos, 1);
             }else if(triangleRasterY == 125.0){ //La dificultad seleccionada es Easy
                 newGame = true;
-                ammunition = true;
+                gameStart = true;
                 discoUnoEnPantalla = true;
                 desaparece = false;
                 velocidadDeDificultad = (3*velocidadDeDificultad)/4;
                 glutTimerFunc(1000, discos, 1);
             } else if(triangleRasterY == 75.0){ //La dificultad seleccionada es Hard
                 newGame = true;
-                ammunition = true;
+                gameStart = true;
                 discoUnoEnPantalla = true;
                 desaparece = false;
                 velocidadDeDificultad = velocidadDeDificultad * 2.5;
