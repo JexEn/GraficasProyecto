@@ -46,36 +46,46 @@ char marcadorPuntaje[200] = "";
 
 float velocidadDeDificultad = 80;
 bool gameStart = false;
+bool gameOver = false;
 int balasRestantes = 3;
 int rasterBalas = -399;
-int puntaje = 1000000;
+int puntaje = 000;
 
 static GLuint texName[36];
 
 //variables de movimiento para un disco
-float tiempoTranscurrido = 0;
-float traslacionDiscoUnoX = 0;
+bool colisionDiscoUno = false;
+float tiempoTranscurridoUno = 0;
+float traslacionDiscoUnoX = -100;
 float traslacionDiscoUnoY = 10;
 float traslacionDiscoUnoZ = -20;
+
+bool colisionDiscoDos = false;
+float tiempoTranscurridoDos = 0;
+float traslacionDiscoDosX = 100;
+float traslacionDiscoDosY = 10;
+float traslacionDiscoDosZ = -20;
+
 int anguloDeTiro = 0;
 int rasterBalaDisparadaZ = 0;
-int rasterDiscosDeRonda = -210;
-int rasterCuantosNecesitasX = -200;
+int rasterDiscosDeRonda = -200;
+int rasterCuantosNecesitasX = -210;
 
 float screenHeight = 600;
 float traslacionBalaX = 800;
 float traslacionBalaY = 600;
 float traslacionBalaZ = 0;
-bool balaDisaparada = false;
-bool colisionDiscoUno = false;
+bool balaDisparada = false;
+
 
 bool discoEnJuego = 0;
 
 bool discoUnoEnPantalla = false;
+bool discoDosEnPantalla = false;
 
 int cualDiscoVas = 0;
-bool esAventado[10] = {true,true,true,true,true,true,true,true,true,true};
-bool colorDisco[10] = {true,false,false,false,false,false,false,false,false,false};
+bool esAventado[10] = {true,false,true,true,true,true,true,true,true,true};
+bool colorDisco[10] = {true,true,false,false,false,false,false,false,false,false};
 
 
 bool cronometro = false;
@@ -92,8 +102,11 @@ bool instrucciones = false;
 
 bool desaparece = false;
 
+bool nextMiniRound = false;
+
 float triangleRasterY = 100;
 
+void explosion(int i);
 
 void init(void){
     glClearColor (0.0, 0.0, 0.0, 0.0);
@@ -169,10 +182,10 @@ void initRendering(){
     image = loadBMP("/Users/mariaroque/Imagenes/img06.bmp");
     loadTexture(image,5);*/
 
-    image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\background.bmp");loadTexture(image,i++);
-    image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\sabritas.bmp");loadTexture(image,i++);
-    image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\bgmenu.bmp");loadTexture(image,i++);
-    image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\bginstrucciones.bmp");loadTexture(image,i++);
+    image = loadBMP("C:/Users/Chinolee/Documents/Graficas/GraficasProyecto/imagenes/background.bmp");loadTexture(image,i++);
+    image = loadBMP("C:/Users/Chinolee/Documents/Graficas/GraficasProyecto/imagenes/sabritas.bmp");loadTexture(image,i++);
+    image = loadBMP("C:/Users/Chinolee/Documents/Graficas/GraficasProyecto/imagenes/bgmenu.bmp");loadTexture(image,i++);
+    image = loadBMP("C:/Users/Chinolee/Documents/Graficas/GraficasProyecto/imagenes/bginstrucciones.bmp");loadTexture(image,i++);
 
     // image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\bandera argentina.bmp");loadTexture(image,i++);
     // image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\bandera brasil.bmp");loadTexture(image,i++);
@@ -183,82 +196,113 @@ void initRendering(){
 
 
 void discos (int v){
-    
+
     /*
     x = Vo * t * cos(45°)
     y = Vo * t * sen(45°) - (0.5g*(t^2))
     t+=0.001
     */
 
-
-    if (!desaparece){
         // se trasladan con timers
         //comprobar si existe un juego activo, para aventarlo; hay que dibujarlos
-        if(v == 1){
-            traslacionDiscoUnoZ = velocidadDeDificultad * tiempoTranscurrido * cos(45);
-            traslacionDiscoUnoY = (velocidadDeDificultad * tiempoTranscurrido * sin(45)) - (4.9 * pow(tiempoTranscurrido, 2));
+        if(v == 1 && discoUnoEnPantalla){
+            traslacionDiscoUnoZ = velocidadDeDificultad * tiempoTranscurridoUno * cos(45);
+            traslacionDiscoUnoY = (velocidadDeDificultad * tiempoTranscurridoUno * sin(45)) - (4.9 * pow(tiempoTranscurridoUno, 2));
 
-            if(traslacionDiscoUnoX > 0){
-                traslacionDiscoUnoX -= 1;
-            }else if(traslacionDiscoUnoX < 0){
-                traslacionDiscoUnoX += 1;
-            }else
-                traslacionDiscoUnoX+=0;
+                traslacionDiscoUnoX+=1;
 
-            tiempoTranscurrido += 0.02;
+            tiempoTranscurridoUno += 0.02;
 
 
             //El disco ha salido del rango de la pantalla?
             //Sí: desaparecerlo. "destruir" timers.
 
             if(traslacionDiscoUnoZ > 1400 || traslacionDiscoUnoY < 0){
-                desaparece = true;
                 discoUnoEnPantalla = false;
-                cualDiscoVas+=2;
-                if(cualDiscoVas==10)
-                    cualDiscoVas=0;
+                // cualDiscoVas+=2;
+                // if(cualDiscoVas==10)
+                //     cualDiscoVas=0;
                 srand(time(NULL));
-                traslacionDiscoUnoX = rand() % 400;
-                anguloDeTiro = rand()%30+20;
+                // traslacionDiscoUnoX = rand() % 400;
+                // anguloDeTiro = rand()%30+20;
+            }
 
+        }else if (v == 2 && discoDosEnPantalla){
+
+            traslacionDiscoDosZ = velocidadDeDificultad * tiempoTranscurridoDos * cos(70);
+            traslacionDiscoDosY = (velocidadDeDificultad * tiempoTranscurridoDos * sin(70)) - (4.9 * pow(tiempoTranscurridoDos, 2));
+
+                traslacionDiscoDosX-=1;
+
+                tiempoTranscurridoDos += 0.02;
+
+
+                //El disco ha salido del rango de la pantalla?
+                //Sí: desaparecerlo. "destruir" timers.
+
+                if(traslacionDiscoDosZ > 1400 || traslacionDiscoDosY < 0){
+                    discoDosEnPantalla = false;
+                    // cualDiscoVas+=2;
+                    // if(cualDiscoVas==10)
+                    //     cualDiscoVas=0;
+                    srand(time(NULL));
+                    // traslacionDiscoUnoX = rand() % 400;
+                    // anguloDeTiro = rand()%30+20;
+                }
 
             }
-        // else if (v == 2)
+
+        if(balaDisparada){
+            traslacionBalaZ+=50;
+             if(traslacionBalaZ>2000){
+                 balaDisparada = false;
+             }
         }
 
-            if(balaDisaparada){
-                traslacionBalaZ+=505;
-                if(traslacionBalaZ>2000){
-                    balaDisaparada = false;
-                }
-            }
+        if(traslacionBalaX-50 <= traslacionDiscoUnoX && traslacionBalaX+50 >= traslacionDiscoUnoX &&
+           traslacionBalaY-45 <= traslacionDiscoUnoY && traslacionBalaY+45 >= traslacionDiscoUnoY){
+            colisionDiscoUno = true;
+            explosion(1);
+        }   else if(traslacionBalaX-50 <= traslacionDiscoDosX && traslacionBalaX+50 >= traslacionDiscoDosX &&
+           traslacionBalaY-45 <= traslacionDiscoDosY && traslacionBalaY+45 >= traslacionDiscoDosY){
+            colisionDiscoDos = true;
+            explosion(2);
+        }
 
-            if(traslacionBalaX-50 <= traslacionDiscoUnoX && traslacionBalaX+50 >= traslacionDiscoUnoX &&
-                    traslacionBalaY-45 <= traslacionDiscoUnoY && traslacionBalaY+45 >= traslacionDiscoUnoY){
-                        colisionDiscoUno = true;
-                        balaDisaparada = false;
-                        traslacionBalaX = 800;
-                        traslacionBalaY = 600;
-                        traslacionBalaZ = 0;
-                        puntaje += 1000;
-            }
+        if(v==1 && discoDosEnPantalla){
+            glutTimerFunc(1, discos, 2);  // <-- Deberia mandar v = 2 cuando ya manejemos dos discos
+        }else if (v == 2 && discoUnoEnPantalla){
+             glutTimerFunc(1, discos, 1);
+         }else if(v==1 && !discoDosEnPantalla){
+            glutTimerFunc(1, discos, 1);
+         }else if(v==2 && !discoUnoEnPantalla){
+            glutTimerFunc(1, discos, 2);
+         }else if(!discoUnoEnPantalla && !discoDosEnPantalla){
+            nextMiniRound = true;
+         }
 
+    // if(colisionDiscoUno){
+    //     colisionDiscoUno = false;
+    //     desaparece = false;
+    //     glutPostRedisplay();
+    //     glutTimerFunc(1000,discos,1);
+    // }
+        glutPostRedisplay();
 
-        if(v==1){
-            glutPostRedisplay();
-            glutTimerFunc(1, discos, 1);  // <-- Deberia mandar v = 2 cuando ya manejemos dos discos
-        }//else{
-        //     glutPostRedisplay();
-        //     glutTimerFunc(1, discos, 1);
-        // }
-
-    }
 
 }
 
 void disparaBala(){
-    balaDisaparada = true;
+    balaDisparada = true;
     traslacionBalaZ = 0;
+}
+
+void explosion(int i){
+    balaDisparada = false;
+    traslacionBalaX = 800;
+    traslacionBalaY = 600;
+    traslacionBalaZ;
+    puntaje += 1000;
 }
 
 void draw3dString (void *font, char *s, float x, float y, float z){
@@ -312,6 +356,32 @@ void intro(){
     }
 }
 
+void perdiste(){
+    gameOver = true;
+    tiempoTranscurridoUno = 0;
+    tiempoTranscurridoDos = 0;
+    triangleRasterY = 100.0;
+    velocidadDeDificultad = 80;
+    balasRestantes = 3;
+    instrucciones = false;
+    puntaje = 0;
+    //desaparece = true;
+    colisionDiscoUno = false;
+    colisionDiscoDos = false;
+    discoUnoEnPantalla = false;
+    discoDosEnPantalla = false;
+    traslacionDiscoUnoX = -100;
+    traslacionDiscoUnoY = 10;
+    traslacionDiscoUnoZ = -20;
+    traslacionDiscoDosX = 100;
+    traslacionDiscoDosY = 10;
+    traslacionDiscoDosZ = -20;
+
+    for (int i=0;i<10;i++){
+        colorDisco[i]= false;
+    }
+}
+
 void menuInstrucciones(){
 
         glEnable(GL_TEXTURE_2D);
@@ -362,6 +432,19 @@ void menuInstrucciones(){
         draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.15, buffer2, -220, 90, 0);
         sprintf(buffer2, "regresar al menu anterior");
         draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.15, buffer2, 30, 90, 0);
+
+}
+void perdisteScreen(){
+    glColor3d(1,1,1);
+    glBegin(GL_TRIANGLES);
+        glVertex2f(-90.0,triangleRasterY+15.0);
+        glVertex2f(-90.0,triangleRasterY+5.0);
+        glVertex2f(-70.0,triangleRasterY+10.0);
+    glEnd();
+    sprintf(buffer, "Perdiste! New Game?");
+    draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, -50, 100,0);
+    glColor3d(0,0,0);
+    glRectd(-500,-300,500,300);
 
 }
 
@@ -431,18 +514,30 @@ void gameArea() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glColor3d(1,1,1);
     //Texto en la parte inferior / opciones
-    if(!instrucciones)
+    if(!instrucciones){
+        glPushMatrix();
         intro();
+        glPopMatrix();
+    }
 
-    if(!newGame && !instrucciones)
+    if(!newGame && !instrucciones){
+        glPushMatrix();
         newgame();
+        glPopMatrix();
+    }
 
-    if (instrucciones)
+    if (instrucciones){
+        glPushMatrix();
         menuInstrucciones();
+        glPopMatrix();
+    }
 
+    if (gameOver){
+        perdisteScreen();
+    }
 
     //dibujar ammo
-glDisable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_2D);
 
     if(gameStart){
         rasterBalas = -399;
@@ -454,55 +549,56 @@ glDisable(GL_TEXTURE_2D);
             rasterBalas+=35;
         }
 
-glEnable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE_2D);
 
         glColor3d(1,1,1);
         sprintf(buffer, "S H O T S");
         draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -400, 1, 0);
 
 
-glDisable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_2D);
 
     //Discos que faltan por ser aventados en la ronda
-        for(int i=0; i<10; i++){
-            if(((int)tiempoTranscurrido%2) == 0 ){
-                if(esAventado[cualDiscoVas])
-                    esAventado[cualDiscoVas] = false;
-                else
-                    esAventado[cualDiscoVas] = true;
-
-                if(esAventado[cualDiscoVas+1])
-                    esAventado[cualDiscoVas+1] = false;
-                else
-                    esAventado[cualDiscoVas+1] = true;
+    glPushMatrix();
+    for(int i=0; i<10; i++){
+        if(((int)tiempoTranscurridoUno%2) == 0 ){
+            if(esAventado[cualDiscoVas]){
+                esAventado[cualDiscoVas] = false;
+                esAventado[cualDiscoVas+1] = false;
+            }else{
+                esAventado[cualDiscoVas] = true;
+                esAventado[cualDiscoVas+1] = true;
             }
-            
-            if(esAventado[i]){
-                glPushMatrix();
-                if(colorDisco[i])
-                    glColor3f(1.0, 0.0, 0.0);
-                else glColor3f(1.0, 1.0, 1.0);
-                glLineWidth(1);
-                glTranslated(rasterDiscosDeRonda,20,0);
-                glScaled(1,0.4,0.2);
-                glutSolidSphere(15,100,100);
-                glPopMatrix();
-            }
-            rasterDiscosDeRonda+=35;
         }
+        glPushMatrix();
 
-        for (int i=0; i<32;i++){
+        if(esAventado[i]){
+            if(colorDisco[i])
+                glColor3f(1.0, 0.0, 0.0);
+            else glColor3f(1.0, 1.0, 1.0);
+            glLineWidth(1);
+            glTranslated(rasterDiscosDeRonda,20,0);
+            glScaled(1,0.4,0.2);
+            glutSolidSphere(15,100,100);
+        }
+        rasterDiscosDeRonda+=35;
+
+        glPopMatrix();        
+    }
+    glPopMatrix();
+
+    for (int i=0; i<32;i++){
         glPushMatrix();
         glColor3d(0,0,1);
         glRectd(rasterCuantosNecesitasX,5,rasterCuantosNecesitasX+3,10);
         glPopMatrix();
         rasterCuantosNecesitasX+= 5;
-        }
+    }
 
         rasterCuantosNecesitasX = -210;
         rasterDiscosDeRonda = -200;
 
-glEnable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE_2D);
 
         //Textura / Fondo, para que no se vea tan pirata el area de juego...
         glColor3d(1,1,1);
@@ -570,7 +666,33 @@ glEnable(GL_TEXTURE_2D);
         glDisable(GL_TEXTURE_GEN_T);
     }
 
-glEnable(GL_TEXTURE_2D);
+    if(discoDosEnPantalla){
+        glBindTexture(GL_TEXTURE_2D, texName[1]);
+        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+
+        //Activar la generación de coordenadas
+        glEnable(GL_TEXTURE_GEN_S);
+        glEnable(GL_TEXTURE_GEN_T);
+
+        glPushMatrix();
+        glColor3f(1.0, 1.0, 1.0);
+        glLineWidth(1);
+        glTranslated(traslacionDiscoDosX,traslacionDiscoDosY,-traslacionDiscoDosZ);
+        glScaled(1.6,0.2,0.2);
+        //glutWireCube(20);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glutSolidSphere(15,50,50);
+        glPopMatrix();
+
+        glDisable(GL_TEXTURE_GEN_S);
+        glDisable(GL_TEXTURE_GEN_T);
+    }
+
+    glEnable(GL_TEXTURE_2D);
 
     glutSwapBuffers();
 }
@@ -593,6 +715,13 @@ void keyboard(unsigned char key, int mouseX, int mouseY){
     keyStates[key] = true;
 
     switch(key){
+        case 'P':
+        case 'p':
+            glPushMatrix();
+            perdiste();
+            glPopMatrix();
+            glutPostRedisplay();
+            break;
         case 'd':
         case 'D':
         // cronometro = false;
@@ -600,24 +729,9 @@ void keyboard(unsigned char key, int mouseX, int mouseY){
             break;
         case 'r':
         case 'R':
-            tiempoTranscurrido = 0;
-            triangleRasterY = 100.0;
-            velocidadDeDificultad = 80;
-            balasRestantes = 3;
-            instrucciones = false;
-            puntaje = 0;
-            aparecerNombres = true;
-            newGame = false;
-            gameStart = false;
-            difficultyText = false;
-            desaparece = true;
-            traslacionDiscoUnoX = 0;
-
-            for (int i=0;i<10;i++){
-                colorDisco[i]= false;
-
-            }
-
+            glPushMatrix();
+            perdiste();
+            glPopMatrix();
             // cronometro = false;
             glutPostRedisplay();
             break;
@@ -640,35 +754,69 @@ void keyboard(unsigned char key, int mouseX, int mouseY){
                 newGame = true;
                 gameStart = true;
                 discoUnoEnPantalla = true;
+                discoDosEnPantalla = true;
                 desaparece = false;
+                glutPostRedisplay();
                 glutTimerFunc(1000, discos, 1);
             }else if(triangleRasterY == 125.0){ //La dificultad seleccionada es Easy
                 newGame = true;
                 gameStart = true;
                 discoUnoEnPantalla = true;
+                discoDosEnPantalla = true;
                 desaparece = false;
                 velocidadDeDificultad = (3*velocidadDeDificultad)/4;
+                glutPostRedisplay();
                 glutTimerFunc(1000, discos, 1);
             } else if(triangleRasterY == 75.0){ //La dificultad seleccionada es Hard
                 newGame = true;
                 gameStart = true;
                 discoUnoEnPantalla = true;
+                discoDosEnPantalla = true;
                 desaparece = false;
                 velocidadDeDificultad = velocidadDeDificultad * 1.5;
+                glutPostRedisplay();
                 glutTimerFunc(1000, discos, 1);
                 }
             }else if(triangleRasterY==50.0){
             instrucciones = true;
+            glutPostRedisplay();
+        }else if (gameOver){
+            aparecerNombres = true;
+            newGame = false;
+            gameStart = false;
+            difficultyText = false;
+            gameOver = false;
         }else{
             aparecerNombres = false;
             difficultyText = true;
+            glutPostRedisplay();
             }
             break;
         case 27:
-        exit(0); break;
+        exit(0);
+        break;
+        case 32:
+        if(nextMiniRound){
+            nextMiniRound=false;
+            discoUnoEnPantalla = true;
+            discoDosEnPantalla = true;
+
+            traslacionDiscoUnoX = -100;
+            traslacionDiscoUnoY=10;
+            traslacionDiscoUnoZ=-20;
+
+            traslacionDiscoDosX = 100;
+            traslacionDiscoDosY=10;
+            traslacionDiscoDosZ=-20;
+
+            balasRestantes = 3;
+            tiempoTranscurridoUno = 0;
+            tiempoTranscurridoDos = 0;
+            glutPostRedisplay();
+            glutTimerFunc(1000,discos,1);
+            }
+        break;
         }
- 
-    glutPostRedisplay();
 
 }
 
@@ -714,7 +862,7 @@ void dispara(int button, int state, int mouseX, int mouseY){
             traslacionBalaY = screenHeight-mouseY;
             traslacionBalaX = 400-mouseX;
             disparaBala();
-            PlaySound("C:\\Users\\JNeri\\Documents\\Graficas\\Proyecto_Final\\shotgun.wav", NULL, SND_ASYNC|SND_FILENAME);
+            PlaySound("C:/Users/Chinolee/Documents/Graficas/GraficasProyecto/shotgun.wav", NULL, SND_ASYNC|SND_FILENAME);
         }
     glutPostRedisplay();
 
