@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1430092179 source:c:\users\chinolee\documents\graficas\graficasproyecto\main.cpp
+1431449804 source:c:\users\chinolee\documents\graficas\graficasproyecto\main.cpp
 	<GLUT/glut.h>
 	<windows.h>
 	<GL/glut.h>

@@ -77,7 +77,6 @@ float traslacionBalaY = 600;
 float traslacionBalaZ = 0;
 bool balaDisaparada = false;
 
-
 bool discoEnJuego = 0;
 
 bool discoUnoEnPantalla = false;
@@ -106,7 +105,14 @@ bool nextMiniRound = false;
 
 float triangleRasterY = 100;
 
+int contExplosionUno = 0;
+int contExplosionDos = 0;
+bool boolExplosionUno = false;
+bool boolExplosionDos = false;
+
+
 void explosion (int b);
+void animacionExplosion (float x, float y, float z);
 
 void init(void){
     glClearColor (0.0, 0.0, 0.0, 0.0);
@@ -182,14 +188,14 @@ void initRendering(){
     image = loadBMP("/Users/mariaroque/Imagenes/img06.bmp");
     loadTexture(image,5);*/
 
-    image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\background.bmp");loadTexture(image,i++);
-    image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\sabritas.bmp");loadTexture(image,i++);
-    image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\bgmenu.bmp");loadTexture(image,i++);
-    image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\bginstrucciones.bmp");loadTexture(image,i++);
+    image = loadBMP("C:/Users/Chinolee/Documents/Graficas/GraficasProyecto/background.bmp");loadTexture(image,i++);
+    image = loadBMP("C:/Users/Chinolee/Documents/Graficas/GraficasProyecto/sabritas.bmp");loadTexture(image,i++);
+    image = loadBMP("C:/Users/Chinolee/Documents/Graficas/GraficasProyecto/bgmenu.bmp");loadTexture(image,i++);
+    image = loadBMP("C:/Users/Chinolee/Documents/Graficas/GraficasProyecto/bginstrucciones.bmp");loadTexture(image,i++);
 
-    // image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\bandera argentina.bmp");loadTexture(image,i++);
-    // image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\bandera brasil.bmp");loadTexture(image,i++);
-    // image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\bandera canada.bmp");loadTexture(image,i++);
+    // image = loadBMP("C:\\Users\\Chinolee\\GraficasProyecto\\imagenes\\bandera argentina.bmp");loadTexture(image,i++);
+    // image = loadBMP("C:\\Users\\Chinolee\\GraficasProyecto\\imagenes\\bandera brasil.bmp");loadTexture(image,i++);
+    // image = loadBMP("C:\\Users\\Chinolee\\GraficasProyecto\\imagenes\\bandera canada.bmp");loadTexture(image,i++);
 
     delete image;
 }
@@ -239,7 +245,7 @@ void discos (int v){
 
         }
 
-         if (v == 2 && discoDosEnPantalla){
+        if (v == 2 && discoDosEnPantalla){
 
             traslacionDiscoDosZ = velocidadDeDificultad * tiempoTranscurridoDos * cos(70);
             traslacionDiscoDosY = (velocidadDeDificultad * tiempoTranscurridoDos * sin(70)) - (4.9 * pow(tiempoTranscurridoDos, 2));
@@ -262,7 +268,7 @@ void discos (int v){
                     // anguloDeTiro = rand()%30+20;
                 }
 
-            }
+        }
 
         /*if(balaDisaparada){
             traslacionBalaZ+=50;
@@ -274,8 +280,8 @@ void discos (int v){
 
         /* si la bala hace colision con un disco con el discoUno*/
         if(
-           traslacionBalaX-50 <= traslacionDiscoUnoX &&
-           traslacionBalaX+50 >= traslacionDiscoUnoX &&
+           traslacionBalaX-70 <= traslacionDiscoUnoX &&
+           traslacionBalaX+70 >= traslacionDiscoUnoX &&
            traslacionBalaY-45 <= traslacionDiscoUnoY &&
            traslacionBalaY+45 >= traslacionDiscoUnoY
            )
@@ -286,8 +292,8 @@ void discos (int v){
 
         /* Si la bala hace colision con el discoDos*/
         if(
-           traslacionBalaX-50 <= traslacionDiscoDosX &&
-           traslacionBalaX+50 >= traslacionDiscoDosX &&
+           traslacionBalaX-70 <= traslacionDiscoDosX &&
+           traslacionBalaX+70 >= traslacionDiscoDosX &&
            traslacionBalaY-45 <= traslacionDiscoDosY &&
            traslacionBalaY+45 >= traslacionDiscoDosY
            )
@@ -335,28 +341,24 @@ void explosion(int b){
     traslacionBalaX = 800;
     traslacionBalaY = 600;
     traslacionBalaZ = 0;
-    
+
     if(b==1){
         discoUnoEnPantalla = false;
-        traslacionDiscoUnoX =  10000;
-        traslacionDiscoUnoY = 10000;
-        traslacionDiscoUnoZ = 10000;
+        // traslacionDiscoUnoX =  10000;
+        // traslacionDiscoUnoY = 10000;
+        // traslacionDiscoUnoZ = 10000;
         puntaje += 1000;
         colorDisco[cualDiscoVas]=true;
     }
 
     if (b==2){
         discoDosEnPantalla = false;
-        traslacionDiscoDosX =  10000;
-        traslacionDiscoDosY = 10000;
-        traslacionDiscoDosZ = 10000;
+        // traslacionDiscoDosX =  10000;
+        // traslacionDiscoDosY = 10000;
+        // traslacionDiscoDosZ = 10000;
         puntaje += 1000;
         colorDisco[cualDiscoVas+1]=true;
-
-
     }
-
-
 }
 
 void disparaBala(){
@@ -671,6 +673,44 @@ glEnable(GL_TEXTURE_2D);
 
         glDisable(GL_TEXTURE_GEN_S);
         glDisable(GL_TEXTURE_GEN_T);
+    } else if(newGame){
+        glColor3d(1,1,1);
+        glPointSize(5);
+        if(boolExplosionUno == false){
+            boolExplosionUno = true;
+            contExplosionUno = 0;
+        }
+        if(boolExplosionUno && contExplosionUno < 100){
+            glPushMatrix();
+            glTranslated(0,contExplosionUno,0);
+            sprintf(buffer, "1000");
+            draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.07, buffer, traslacionDiscoUnoX, traslacionDiscoUnoY, 0);
+            glPopMatrix();
+            contExplosionUno++;
+        } else{
+            boolExplosionUno = false;
+        }
+        // glBegin(GL_POINTS);
+        // glPushMatrix();
+        // glVertex2f(traslacionDiscoUnoX,traslacionDiscoUnoY);
+        //     glPushMatrix();
+        //         glVertex2f(traslacionDiscoUnoX,traslacionDiscoUnoY+5);
+        //         glTranslated(0,tiempoTranscurridoExplosion,0);
+        //     glPopMatrix();
+        //     glPushMatrix();
+        //         glVertex2f(traslacionDiscoUnoX,traslacionDiscoUnoY-5);
+        //         glTranslated(0,-tiempoTranscurridoExplosion,0);
+        //     glPopMatrix();
+        //     glPushMatrix();
+        //         glVertex2f(traslacionDiscoUnoX+5,traslacionDiscoUnoY);
+        //         glTranslated(tiempoTranscurridoExplosion,0,0);
+        //     glPopMatrix();
+        //     glPushMatrix();
+        //         glVertex2f(traslacionDiscoUnoX-5,traslacionDiscoUnoY);
+        //         glTranslated(-tiempoTranscurridoExplosion,0,0);
+        //     glPopMatrix();
+        // glPopMatrix();
+        // glEnd();
     }
 
     if(discoDosEnPantalla){
@@ -697,10 +737,36 @@ glEnable(GL_TEXTURE_2D);
 
         glDisable(GL_TEXTURE_GEN_S);
         glDisable(GL_TEXTURE_GEN_T);
+    }else if(newGame){
+        glColor3d(1,1,1);
+        glPointSize(5);
+
+        if(boolExplosionDos == false){
+            boolExplosionDos = true;
+            contExplosionDos = 0;
+        }
+        if(boolExplosionDos && contExplosionDos < 100){
+            glPushMatrix();
+            glTranslated(0,contExplosionDos,0);
+            sprintf(buffer, "1000");
+            draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.07, buffer, traslacionDiscoDosX, traslacionDiscoDosY, 0);
+            glPopMatrix();
+            contExplosionDos++;
+        } else{
+            boolExplosionDos = false;
+        }
+        // glBegin(GL_POINTS);
+        // glPushMatrix();
+        // glVertex2f(traslacionDiscoDosX,traslacionDiscoDosY);
+        // glVertex2f(traslacionDiscoDosX,traslacionDiscoDosY+5);
+        // glVertex2f(traslacionDiscoDosX,traslacionDiscoDosY-5);
+        // glVertex2f(traslacionDiscoDosX+5,traslacionDiscoDosY);
+        // glVertex2f(traslacionDiscoDosX-5,traslacionDiscoDosY);
+        // glPopMatrix();
+        // glEnd();
     }
 
 glEnable(GL_TEXTURE_2D);
-
     glutSwapBuffers();
 }
 
@@ -886,7 +952,7 @@ void dispara(int button, int state, int mouseX, int mouseY){
             traslacionBalaY = screenHeight-mouseY;
             traslacionBalaX = mouseX-400;
             disparaBala();
-            PlaySound("C:\\Users\\JNeri\\Documents\\Graficas\\Proyecto_Final\\shotgun.wav", NULL, SND_ASYNC|SND_FILENAME);
+            PlaySound("C:\\Users\\Chinolee\\Documents\\Graficas\\GraficasProyecto\\shotgun.wav", NULL, SND_ASYNC|SND_FILENAME);
         }
     glutPostRedisplay();
 
