@@ -71,6 +71,8 @@ int rasterBalaDisparadaZ = 0;
 int rasterDiscosDeRonda = -200;
 int rasterCuantosNecesitasX = -210;
 
+int numeroRound = 1;
+
 float screenHeight = 600;
 float traslacionBalaX = 800;
 float traslacionBalaY = 600;
@@ -83,8 +85,9 @@ bool discoUnoEnPantalla = false;
 bool discoDosEnPantalla = false;
 
 int cualDiscoVas = 0;
-bool esAventado[10] = {true,false,true,true,true,true,true,true,true,true};
-bool colorDisco[10] = {true,false,false,false,false,false,false,false,false,false};
+bool esAventado[10] = {true,true,true,true,true,true,true,true,true,true};
+bool colorDisco[10] = {false,false,false,false,false,false,false,false,false,false};
+bool boolGameOver = false;
 
 
 bool cronometro = false;
@@ -105,6 +108,7 @@ bool nextMiniRound = false;
 
 float triangleRasterY = 100;
 
+int cantidadDeDiscosDestruidos = 0;
 int contExplosionUno = 0;
 int contExplosionDos = 0;
 bool boolExplosionUno = false;
@@ -188,14 +192,14 @@ void initRendering(){
     image = loadBMP("/Users/mariaroque/Imagenes/img06.bmp");
     loadTexture(image,5);*/
 
-    image = loadBMP("C:/Users/Chinolee/Documents/Graficas/GraficasProyecto/background.bmp");loadTexture(image,i++);
-    image = loadBMP("C:/Users/Chinolee/Documents/Graficas/GraficasProyecto/sabritas.bmp");loadTexture(image,i++);
-    image = loadBMP("C:/Users/Chinolee/Documents/Graficas/GraficasProyecto/bgmenu.bmp");loadTexture(image,i++);
-    image = loadBMP("C:/Users/Chinolee/Documents/Graficas/GraficasProyecto/bginstrucciones.bmp");loadTexture(image,i++);
+    image = loadBMP("C://Users//JNeri//GraficasProyecto//background.bmp");loadTexture(image,i++);
+    image = loadBMP("C://Users//JNeri//GraficasProyecto//sabritas.bmp");loadTexture(image,i++);
+    image = loadBMP("C://Users//JNeri//GraficasProyecto//bgmenu.bmp");loadTexture(image,i++);
+    image = loadBMP("C://Users//JNeri//GraficasProyecto//bginstrucciones.bmp");loadTexture(image,i++);
 
-    // image = loadBMP("C:\\Users\\Chinolee\\GraficasProyecto\\imagenes\\bandera argentina.bmp");loadTexture(image,i++);
-    // image = loadBMP("C:\\Users\\Chinolee\\GraficasProyecto\\imagenes\\bandera brasil.bmp");loadTexture(image,i++);
-    // image = loadBMP("C:\\Users\\Chinolee\\GraficasProyecto\\imagenes\\bandera canada.bmp");loadTexture(image,i++);
+    // image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\bandera argentina.bmp");loadTexture(image,i++);
+    // image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\bandera brasil.bmp");loadTexture(image,i++);
+    // image = loadBMP("C:\\Users\\JNeri\\GraficasProyecto\\imagenes\\bandera canada.bmp");loadTexture(image,i++);
 
     delete image;
 }
@@ -559,16 +563,16 @@ glDisable(GL_TEXTURE_2D);
             rasterBalas+=35;
         }
 
-glEnable(GL_TEXTURE_2D);
+        glEnable(GL_TEXTURE_2D);
 
         glColor3d(1,1,1);
         sprintf(buffer, "S H O T S");
         draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.1, buffer, -400, 3, 0);
 
 
-glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_2D);
 
-    //Discos que faltan por ser aventados en la ronda
+        //Discos que faltan por ser aventados en la ronda
         if(((int)tiempoTranscurridoParpadeo%100) == 0 ){
             if(esAventado[cualDiscoVas]){
                 esAventado[cualDiscoVas] = false;
@@ -576,11 +580,10 @@ glDisable(GL_TEXTURE_2D);
             }else{
                 esAventado[cualDiscoVas] = true;
                 esAventado[cualDiscoVas+1] = true;
-            }
+                }
         }
 
         for(int i=0; i<10; i++){
-
             if(esAventado[i]){
                 glPushMatrix();
                 if(colorDisco[i])
@@ -607,7 +610,7 @@ glDisable(GL_TEXTURE_2D);
         rasterCuantosNecesitasX = -210;
         rasterDiscosDeRonda = -200;
 
-glEnable(GL_TEXTURE_2D);
+        glEnable(GL_TEXTURE_2D);
 
         //Textura / Fondo, para que no se vea tan pirata el area de juego...
         glColor3d(1,1,1);
@@ -637,6 +640,18 @@ glEnable(GL_TEXTURE_2D);
         draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.07, marcadorPuntaje, 320, 12, 0);
         sprintf(buffer, "S C O R E");
         draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.07, buffer, 320, 1, 0);
+
+        glColor3d(1,1,1);
+        sprintf(buffer, "R = %1d", numeroRound);
+        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.2, buffer, 300, 50, 0);
+
+        if(boolGameOver){
+        glColor3d(1,1,1);
+        sprintf(buffer, "G A M E  O V E R...");
+        draw3dStringScale(GLUT_STROKE_MONO_ROMAN, 0.5, buffer, -390, 100, 0);
+        }
+
+
 
         glColor3d(0,0,0);
         glPushMatrix();
@@ -795,34 +810,64 @@ void keyboard(unsigned char key, int mouseX, int mouseY){
             break;
         case 'r':
         case 'R':
-            tiempoTranscurridoUno = 0;
-            tiempoTranscurridoDos = 0;
-            triangleRasterY = 100.0;
+            cantidadDeDiscosDestruidos = 0;
             velocidadDeDificultad = 80;
-            balasRestantes = 3;
-            instrucciones = false;
-            puntaje = 0;
-            aparecerNombres = true;
-            newGame = false;
             gameStart = false;
-            difficultyText = false;
-            //desaparece = true;
+            balasRestantes = 3;
+            rasterBalas = -399;
+            puntaje = 0;
+            tiempoTranscurridoParpadeo = 0;
             colisionDiscoUno = false;
-            colisionDiscoDos = false;
-            discoUnoEnPantalla = false;
-            discoDosEnPantalla = false;
+            tiempoTranscurridoUno = 0;
             traslacionDiscoUnoX = -100;
             traslacionDiscoUnoY = 10;
             traslacionDiscoUnoZ = -20;
 
+            colisionDiscoDos = false;
+            tiempoTranscurridoDos = 0;
             traslacionDiscoDosX = 100;
             traslacionDiscoDosY = 10;
             traslacionDiscoDosZ = -20;
 
+            anguloDeTiro = 0;
+            rasterBalaDisparadaZ = 0;
+            rasterDiscosDeRonda = -200;
+            rasterCuantosNecesitasX = -210;
+
+            numeroRound = 1;
+
+            screenHeight = 600;
+            traslacionBalaX = 800;
+            traslacionBalaY = 600;
+            traslacionBalaZ = 0;
+            balaDisaparada = false;
+            discoEnJuego = 0;
+
+            discoUnoEnPantalla = false;
+            discoDosEnPantalla = false;
+
+            cualDiscoVas = 0;
+            boolGameOver = false;
+            cronometro = false;
+            aparecerNombres = true;
+
+            newGame = false;
+            difficultyText = false;
+            instrucciones = false;
+
+            desaparece = false;
+
+            nextMiniRound = false;
+
+            triangleRasterY = 100;
+
+            contExplosionUno = 0;
+            contExplosionDos = 0;
+            boolExplosionUno = false;
+            boolExplosionDos = false;
 
             for (int i=0;i<10;i++){
                 colorDisco[i]= false;
-
             }
 
             // cronometro = false;
@@ -902,11 +947,96 @@ void keyboard(unsigned char key, int mouseX, int mouseY){
             cualDiscoVas+=2;
             tiempoTranscurridoUno = 0;
             tiempoTranscurridoDos = 0;
+
+            if(cualDiscoVas>=10){
+                cualDiscoVas=0;
+                numeroRound+=1;
+                velocidadDeDificultad = velocidadDeDificultad*1.04;
+
+                for(int i=0; i<10;i++){
+                    if(colorDisco[i])
+                        cantidadDeDiscosDestruidos++;
+                    colorDisco[i]=false;
+                }
+
+            if(cantidadDeDiscosDestruidos>=5){
             glutPostRedisplay();
-            glutTimerFunc(1000,discos,1);
+            glutTimerFunc(2000,discos,1);
+            }else{
+                boolGameOver = true;
+                glutPostRedisplay();
+                }
+
+            } else{
+                glutPostRedisplay();
+                glutTimerFunc(1000,discos,1);
             }
-        break;
+
         }
+
+        if(boolGameOver){
+            cantidadDeDiscosDestruidos = 0;
+            velocidadDeDificultad = 80;
+            gameStart = false;
+            balasRestantes = 3;
+            rasterBalas = -399;
+            puntaje = 0;
+            tiempoTranscurridoParpadeo = 0;
+            colisionDiscoUno = false;
+            tiempoTranscurridoUno = 0;
+            traslacionDiscoUnoX = -100;
+            traslacionDiscoUnoY = 10;
+            traslacionDiscoUnoZ = -20;
+
+            colisionDiscoDos = false;
+            tiempoTranscurridoDos = 0;
+            traslacionDiscoDosX = 100;
+            traslacionDiscoDosY = 10;
+            traslacionDiscoDosZ = -20;
+
+            anguloDeTiro = 0;
+            rasterBalaDisparadaZ = 0;
+            rasterDiscosDeRonda = -200;
+            rasterCuantosNecesitasX = -210;
+
+            numeroRound = 1;
+
+            screenHeight = 600;
+            traslacionBalaX = 800;
+            traslacionBalaY = 600;
+            traslacionBalaZ = 0;
+            balaDisaparada = false;
+            discoEnJuego = 0;
+
+            discoUnoEnPantalla = false;
+            discoDosEnPantalla = false;
+
+            cualDiscoVas = 0;
+            boolGameOver = false;
+            cronometro = false;
+            aparecerNombres = true;
+
+            newGame = false;
+            difficultyText = false;
+            instrucciones = false;
+
+            desaparece = false;
+
+            nextMiniRound = false;
+
+            triangleRasterY = 100;
+
+            contExplosionUno = 0;
+            contExplosionDos = 0;
+            boolExplosionUno = false;
+            boolExplosionDos = false;
+
+            for (int i=0;i<10;i++){
+                colorDisco[i]= false;
+            }
+        }
+        break;
+    }
 
 }
 
@@ -952,7 +1082,7 @@ void dispara(int button, int state, int mouseX, int mouseY){
             traslacionBalaY = screenHeight-mouseY;
             traslacionBalaX = mouseX-400;
             disparaBala();
-            PlaySound("C:\\Users\\Chinolee\\Documents\\Graficas\\GraficasProyecto\\shotgun.wav", NULL, SND_ASYNC|SND_FILENAME);
+            PlaySound("C:\\Users\\JNeri\\Documents\\Graficas\\GraficasProyecto\\shotgun.wav", NULL, SND_ASYNC|SND_FILENAME);
         }
     glutPostRedisplay();
 
